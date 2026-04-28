@@ -1,0 +1,91 @@
+version: '3.8'
+
+# ============================================================
+# MediAI – Cluster Citus (PostgreSQL distribué)
+# 1 Coordinator (Paris HQ) + 3 Workers (Tunis, Montréal, Tokyo)
+# ============================================================
+
+services:
+
+  # ── Coordinator / Master ──────────────────────────────────
+  citus_master:
+    image: citusdata/citus:12.1
+    container_name: citus_master
+    hostname: citus_master
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mediAI
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/data
+      - citus_master_data:/var/lib/postgresql/data
+    networks:
+      - mediAI_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mediAI"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Worker 1 – Site Tunis ─────────────────────────────────
+  citus_worker1:
+    image: citusdata/citus:12.1
+    container_name: citus_worker1
+    hostname: citus_worker1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mediAI
+    volumes:
+      - citus_worker1_data:/var/lib/postgresql/data
+    networks:
+      - mediAI_net
+    depends_on:
+      citus_master:
+        condition: service_healthy
+
+  # ── Worker 2 – Site Montréal ──────────────────────────────
+  citus_worker2:
+    image: citusdata/citus:12.1
+    container_name: citus_worker2
+    hostname: citus_worker2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mediAI
+    volumes:
+      - citus_worker2_data:/var/lib/postgresql/data
+    networks:
+      - mediAI_net
+    depends_on:
+      citus_master:
+        condition: service_healthy
+
+  # ── Worker 3 – Site Tokyo ─────────────────────────────────
+  citus_worker3:
+    image: citusdata/citus:12.1
+    container_name: citus_worker3
+    hostname: citus_worker3
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mediAI
+    volumes:
+      - citus_worker3_data:/var/lib/postgresql/data
+    networks:
+      - mediAI_net
+    depends_on:
+      citus_master:
+        condition: service_healthy
+
+volumes:
+  citus_master_data:
+  citus_worker1_data:
+  citus_worker2_data:
+  citus_worker3_data:
+
+networks:
+  mediAI_net:
+    driver: bridge
