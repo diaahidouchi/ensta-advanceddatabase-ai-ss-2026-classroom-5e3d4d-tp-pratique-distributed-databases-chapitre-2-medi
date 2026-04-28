@@ -3,7 +3,8 @@
 
 > **Cas d'étude** : MediAI – Plateforme de santé intelligente distribuée sur 4 sites (Paris, Tunis, Montréal, Tokyo)
 
----
+## Lien du site
+[Voir le site TP](https://ensta-advanceddatabase-ai-ss-2026.github.io/ensta-advanceddatabase-ai-ss-2026-classroom-5e3d4d-tp-pratique-chapitre-2-mediai-tp-pratique-distrib/#setup)
 
 ## 🎯 Objectifs pédagogiques
 
